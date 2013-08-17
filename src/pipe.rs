@@ -11,9 +11,16 @@ enum Message<T> {
     Value(T)
 }
 trait Wire<T: Send,U: Send> {
-//  fn connect(&self,f: ~fn(T)->U,port: Port<T>) -> Port<U>;
-fn connect(&self, f: ~fn(T)->U,port: Port<Message<T>>) -> Port<Message<U>>;
+  fn connect(&self, f: ~fn(T)->U,port: Port<Message<T>>) -> Port<Message<U>>;
+}
+trait Sender<T: Send, U: Send>{
+  fn send(&self, t: T);
+  fn shutdown(&self);
 
+}
+trait Receiver<T: Send, U: Send> {
+  fn recv(&self) -> Option<U>;
+  fn recv_wait(&self) -> U;
 }
 impl <T: Send,U: Send> Pipe<Message<T>,Message<U>>{
     fn drop(&self) {
@@ -27,26 +34,17 @@ impl <T: Send,U: Send> Pipe<Message<T>,Message<U>>{
     Pipe { chan: chan,
            port: out_port} 
   }
+}
+impl <T: Send,U: Send> Sender<T,U> for Pipe<Message<T>,Message<U>>{
+  
 
-  pub fn send(&self, t: T) {
+  fn send(&self, t: T) {
       self.chan.send(Value(t));
   }
 
-  pub fn recv(&self) -> Option<U>{
-    match self.port.peek() {
-      true  => Some(self.recv_wait()),
-      false => None
-    }
-  }
+  
 
-  pub fn recv_wait(&self) -> U {
-    match self.port.recv(){
-      Exit => fail!(~"Tried to receive on 'Exit'"),
-      Value(x) => x
-    }
-  }
-
-  pub fn shutdown(&self) {
+  fn shutdown(&self) {
      self.chan.send(Exit);
      loop {
        match self.port.recv() {
@@ -54,6 +52,21 @@ impl <T: Send,U: Send> Pipe<Message<T>,Message<U>>{
          _    => ()
        }
      }
+  }
+}
+impl <T: Send,U: Send> Receiver<T,U> for Pipe<Message<T>,Message<U>> {
+  fn recv(&self) -> Option<U>{
+    match self.port.peek() {
+      true  => Some(self.recv_wait()),
+      false => None
+    }
+  }
+
+  fn recv_wait(&self) -> U {
+    match self.port.recv(){
+      Exit => fail!(~"Tried to receive on 'Exit'"),
+      Value(x) => x
+    }
   }
 }
 
