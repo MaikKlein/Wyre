@@ -13,12 +13,12 @@ enum Message<T> {
 trait Wire<T: Send,U: Send> {
   fn connect(&self, f: ~fn(T)->U,port: Port<Message<T>>) -> Port<Message<U>>;
 }
-trait Sender<T: Send, U: Send>{
+trait Sender<T: Send>{
   fn send(&self, t: T);
   fn shutdown(&self);
 
 }
-trait Receiver<T: Send, U: Send> {
+trait Receiver<U: Send> {
   fn recv(&self) -> Option<U>;
   fn recv_wait(&self) -> U;
 }
@@ -35,14 +35,10 @@ impl <T: Send,U: Send> Pipe<Message<T>,Message<U>>{
            port: out_port} 
   }
 }
-impl <T: Send,U: Send> Sender<T,U> for Pipe<Message<T>,Message<U>>{
-  
-
+impl <T: Send,U: Send> Sender<T> for Pipe<Message<T>,Message<U>>{
   fn send(&self, t: T) {
       self.chan.send(Value(t));
   }
-
-  
 
   fn shutdown(&self) {
      self.chan.send(Exit);
@@ -54,7 +50,7 @@ impl <T: Send,U: Send> Sender<T,U> for Pipe<Message<T>,Message<U>>{
      }
   }
 }
-impl <T: Send,U: Send> Receiver<T,U> for Pipe<Message<T>,Message<U>> {
+impl <T: Send,U: Send> Receiver<U> for Pipe<Message<T>,Message<U>> {
   fn recv(&self) -> Option<U>{
     match self.port.peek() {
       true  => Some(self.recv_wait()),
