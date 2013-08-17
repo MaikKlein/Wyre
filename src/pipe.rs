@@ -22,11 +22,7 @@ trait Receiver<U: Send> {
   fn recv(&self) -> Option<U>;
   fn recv_wait(&self) -> U;
 }
-impl <T: Send,U: Send> Pipe<Message<T>,Message<U>>{
-    fn drop(&self) {
-        self.shutdown(); // doesn't work
-    }
-}
+
 impl <T: Send,U: Send> Pipe<Message<T>,Message<U>>{
   pub fn new(f: ~fn(Port<T>) -> Port<U>)-> Pipe<T,U> {
     let (in_port, chan): (Port<T>, Chan<T>) = stream();
