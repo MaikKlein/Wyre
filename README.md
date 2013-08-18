@@ -1,5 +1,5 @@
 # Wyre *Work In Progress*
-The purpose of Wyre is to run linear code concurrently. 
+Wyre is a small library built on top of the Rust task model. It allows you to model concurrency on a higher abstraction.
 
 ## Example code
 
@@ -32,8 +32,8 @@ fn main(){
   pipe.shutdown();
 }
 ~~~
+`LinearPipe` is a small wrapper on top of `Port` and `Chan` which is designed to have exactly one channel and one end port. In this example we are sending an integer '21' from out main task to another task. The integer gets multiplied by 2 and gets forwarded to another task where it will be transformed to a float. Then it will be forwarded to another task and it gets transformed to a '~str'. Finally we can receive the result in our main task via `pipe.recv()`
 
-As you can see it takes an int, transforms it to a float and transforms it to a str.
 ~~~rust
 extern mod wyre;
 use wyre::pipe::*;
@@ -58,6 +58,10 @@ fn main(){
   chan.send(Exit);
 }
 ~~~
+
+In this example we introduce `one_to_many` and `many_to_one`. `one_to_many` just receives one incoming message and forwards it to n ports. `many_to_one` takes n ports and forwards n messages to one port.
+
+The example above it will output `~"42"` 10 times.
 ## Instructions
 
 ### Building Wyre
@@ -67,6 +71,6 @@ fn main(){
 ### Building the examples
 
 1. `$ cd wyre/examples`
-2. `$ make` or for a specific example `$ make <example name>` (eg. `$ make window`)
+2. `$ make` or for a specific example `$ make <example name>` 
 
 
