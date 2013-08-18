@@ -1,7 +1,5 @@
 # Wyre *Work In Progress*
-The purpose of Wyre is to run linear code concurrently. If you have a function that looks like `f(g(h(x)))` it will look
-something like `x -> [Task 1, h] -> [Task 2, g] -> [Task 3, f] -> y` where f,h and g are your functions from
-type fn(T)->U.
+The purpose of Wyre is to run linear code concurrently. 
 
 ## Example code
 
@@ -26,7 +24,7 @@ fn main(){
   }
   do 5.times(){
     // receives and waits for the result
-    // alternative: use .recv() to get the result immediately.
+    // alternative: use .try_recv() to get the result immediately.
     // prints '42' 5 times.
     printfln!(pipe.recv());
   }
@@ -43,8 +41,8 @@ fn main(){
   let (port,chan) = stream();
   let end_port =  many_to_one(|x|"Result is : "+x,
                     one_to_many_wire(10,|x| x,
-                      single_wire(|x| fmt!("%?",x) ,
-                        single_wire(|x: int| x * 2 ,
+                      single_wire(|x| fmt!("%?",x),
+                        single_wire(|x: int| x * 2,
                           port
                         )
                       )
