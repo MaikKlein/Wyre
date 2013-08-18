@@ -6,11 +6,11 @@ type fn(T)->U.
 ## Example code
 
 
-[https://github.com/MaikKlein/Wyre/blob/master/examples/linear_pipe.rs]
+[]
 
 
-# Embed the file robertkrimen/gist-it-example/example.js
-<script src="http://gist-it.appspot.com/github/robertkrimen/gist-it-example/blob/master/example.js"></script>
+
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://github.com/MaikKlein/Wyre/blob/master/examples/linear_pipe.rs)
 
 As you can see it takes an int, transforms it to a float and transforms it to a str.
 
