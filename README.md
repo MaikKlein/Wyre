@@ -8,32 +8,30 @@ type fn(T)->U.
 
 ~~~rust
 extern mod wyre;
-use wyre::*;
+use wyre::pipe::*;
 fn main(){
-  let pipe = do Pipe::new()|p|{ 
-                SingleWire.connect(|x| fmt!("%?",x) ,
-                  SingleWire.connect(|x| x as float ,
-                    SingleWire.connect(|x: int| x * 2 ,
+  let pipe = do LinearPipe::new()|p|{ 
+                single_wire(|x| fmt!("%?",x) ,
+                  single_wire(|x| x as float ,
+                    single_wire(|x: int| x * 2 ,
                       p
                     )
                   )
                 )    
               };
-   
-   // queue your messages           
-  do 100.times() {
+
+  // queue your messages
+  do 5.times(){
     pipe.send(21);
   }
-  // collect your messages
-  do 100.times(){
+  do 5.times(){
     // receives and waits for the result
     // alternative: use .recv() to get the result immediately.
-    // prints '42' 100 times.
-    println(pipe.recv_wait());
+    // prints '42' 5 times.
+    printfln!(pipe.recv_wait());
   }
   // closes all open tasks that are associated with 'pipe'
   pipe.shutdown();
-
 }
 ~~~
 
