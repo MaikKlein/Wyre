@@ -4,13 +4,7 @@ something like `x -> [Task 1, h] -> [Task 2, g] -> [Task 3, f] -> y` where f,h a
 type fn(T)->U.
 
 ## Example code
-
-
-[]
-
-
-
-[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://github.com/MaikKlein/Wyre/blob/master/examples/linear_pipe.rs)
+<script src="https://gist.github.com/MaikKlein/6262167.js"></script>
 
 As you can see it takes an int, transforms it to a float and transforms it to a str.
 
