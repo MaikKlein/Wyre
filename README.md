@@ -8,6 +8,10 @@ type fn(T)->U.
 
 [https://github.com/MaikKlein/Wyre/blob/master/examples/linear_pipe.rs]
 
+
+# Embed the file robertkrimen/gist-it-example/example.js
+<script src="http://gist-it.appspot.com/github/robertkrimen/gist-it-example/blob/master/example.js"></script>
+
 As you can see it takes an int, transforms it to a float and transforms it to a str.
 
 ## Instructions
