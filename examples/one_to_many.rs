@@ -11,8 +11,7 @@ fn main(){
              )
            )
          );
-
-  // closes all open tasks that are associated with 'LinearPipe'
+  
   chan.send(Value(21));
   for port in p.iter() {
     printfln!("%?",port.recv());

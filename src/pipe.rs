@@ -19,8 +19,8 @@ trait Sender<T: Send>{
 
 }
 trait Receiver<U: Send> {
-  fn recv(&self) -> Option<U>;
-  fn recv_wait(&self) -> U;
+  fn try_recv(&self) -> Option<U>;
+  fn recv(&self) -> U;
 }
 
 impl <T: Send,U: Send> LinearPipe<Message<T>,Message<U>>{
@@ -47,22 +47,20 @@ impl <T: Send,U: Send> Sender<T> for LinearPipe<Message<T>,Message<U>>{
   }
 }
 impl <T: Send,U: Send> Receiver<U> for LinearPipe<Message<T>,Message<U>> {
-  fn recv(&self) -> Option<U>{
+  fn try_recv(&self) -> Option<U>{
     match self.port.peek() {
-      true  => Some(self.recv_wait()),
+      true  => Some(self.recv()),
       false => None
     }
   }
 
-  fn recv_wait(&self) -> U {
+  fn recv(&self) -> U {
     match self.port.recv(){
       Exit => fail!(~"Tried to receive on 'Exit'"),
       Value(x) => x
     }
   }
 }
-
-
 pub fn one_to_many_wire<T: Send,U: Send + Clone>(count: uint, f: ~fn(T)->U,port: Port<Message<T>>) -> ~[Port<Message<U>>] {
   let mut pvec = ~[];
   let mut cvec = ~[];
@@ -87,7 +85,6 @@ pub fn one_to_many_wire<T: Send,U: Send + Clone>(count: uint, f: ~fn(T)->U,port:
           for chan in cvec.iter() {
             chan.send(Value(msg.clone()));
           }
-          
         }
       }
     }
@@ -106,6 +103,27 @@ fn single_wire<T: Send,U: Send>(f: ~fn(T)->U,port: Port<Message<T>>) -> Port<Mes
           fail!(~"Exit"); 
         }
         Value(x) => out_chan.send(Value(f(x)))
+      }
+    }
+  }
+  out_port
+}
+fn many_to_one<T: Send,U: Send>(f: ~fn(T)->U,pvec: ~[Port<Message<T>>]) -> Port<Message<U>> {
+  let (out_port, out_chan): (Port<Message<U>>, Chan<Message<U>>) = stream();
+  do ::std::task::spawn_unlinked {  
+    loop {  
+      for port in pvec.iter(){
+        if !port.peek(){
+          loop;
+        }
+        let msg = port.recv();
+        match msg {
+          Exit => { 
+            out_chan.send(Exit);
+            fail!(~"Exit"); 
+          }
+          Value(x) => out_chan.send(Value(f(x)))
+        }
       }
     }
   }
