@@ -19,7 +19,7 @@ fn main(){
     // receives and waits for the result
     // alternative: use .recv() to get the result immediately.
     // prints '42' 5 times.
-    printfln!(pipe.recv_wait());
+    printfln!(pipe.recv());
   }
   // closes all open tasks that are associated with 'pipe'
   pipe.shutdown();

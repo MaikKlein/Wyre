@@ -113,16 +113,15 @@ fn many_to_one<T: Send,U: Send>(f: ~fn(T)->U,pvec: ~[Port<Message<T>>]) -> Port<
   do ::std::task::spawn_unlinked {  
     loop {  
       for port in pvec.iter(){
-        if !port.peek(){
-          loop;
-        }
-        let msg = port.recv();
-        match msg {
-          Exit => { 
-            out_chan.send(Exit);
-            fail!(~"Exit"); 
+        if port.peek(){        
+          let msg = port.recv();
+          match msg {
+            Exit => { 
+              out_chan.send(Exit);
+              fail!(~"Exit"); 
+            }
+            Value(x) => out_chan.send(Value(f(x)))
           }
-          Value(x) => out_chan.send(Value(f(x)))
         }
       }
     }
