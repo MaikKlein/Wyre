@@ -14,17 +14,18 @@
 # limitations under the License.
 
 RS_FLAGS	:= -L ../lib
-# RS_FLAGS	:= -g -L ../lib 		# causes "error: internal compiler error: create_function: unexpected sort of node"
 BUILD_DIR	:= bin
 
 
-all: example
+all: one_to_many linear_pipe
 
 builddir:
 	@mkdir -p $(BUILD_DIR)
 
-example: builddir
-	rustc example.rs $(RS_FLAGS) --out-dir $(BUILD_DIR)
+linear_pipe: builddir
+	rustc linear_pipe.rs $(RS_FLAGS) --out-dir $(BUILD_DIR)
+one_to_many: builddir
+	rustc one_to_many.rs $(RS_FLAGS) --out-dir $(BUILD_DIR)
 
 clean:
 	rm -R -f $(BUILD_DIR)
