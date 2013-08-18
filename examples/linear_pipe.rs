@@ -11,13 +11,16 @@ fn main(){
                 )    
               };
 
+  // queue your messages
   do 5.times(){
     pipe.send(21);
   }
   do 5.times(){
+    // receives and waits for the result
+    // alternative: use .recv() to get the result immediately.
+    // prints '42' 5 times.
     printfln!(pipe.recv_wait());
   }
-   
-
+  // closes all open tasks that are associated with 'pipe'
   pipe.shutdown();
 }
