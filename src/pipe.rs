@@ -91,14 +91,14 @@ pub fn one_to_many_wire<T: Send,
   }
   let cvec = cvec;
   do ::std::task::spawn_unlinked {  
-    loop {  
+    'loop: loop {  
       let msg = port.recv();
       match msg {
         Exit => { 
           for chan in cvec.iter() {
             chan.send(Exit);
           }
-          fail!(~"Exit"); 
+          break 'loop;
         }
         Value(x) => {
           let msg = f(x);
@@ -124,7 +124,7 @@ fn single_wire<T: Send,
       match msg {
         Exit => { 
           out_chan.send(Exit);
-          fail!(~"Exit"); 
+          break;
         }
         Value(x) => out_chan.send(Value(f(x)))
       }
@@ -139,20 +139,22 @@ fn many_to_one<T: Send,
                -> Port<Message<U>> {
 
   let (out_port, out_chan): (Port<Message<U>>, Chan<Message<U>>) = stream();
+  
   do ::std::task::spawn_unlinked {  
-    loop {  
+    'main: loop {
       for port in pvec.iter(){
         if port.peek(){        
           let msg = port.recv();
           match msg {
+            Value(x) => out_chan.send(Value(f(x))),
             Exit => { 
               out_chan.send(Exit);
-              fail!(~"Exit"); 
+              break 'main;
             }
-            Value(x) => out_chan.send(Value(f(x)))
           }
         }
       }
+      ::std::task::yield(); 
     }
   }
   out_port
