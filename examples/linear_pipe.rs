@@ -1,5 +1,6 @@
 extern mod wyre;
 use wyre::pipe::*;
+use wyre::wire::*;
 fn main(){
   let pipe = do LinearPipe::new()|p|{ 
                 single_wire(|x| fmt!("%?",x) ,

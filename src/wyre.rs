@@ -22,3 +22,5 @@
 #[crate_type = "lib"];
 
 pub mod pipe;
+pub mod wire;
+pub mod message;
